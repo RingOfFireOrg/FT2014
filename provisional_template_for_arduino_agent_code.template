@@ -1,0 +1,23 @@
+void setup ()
+{
+  // open the serial port:
+  Serial.begin(9600);       
+  Serial.println("");
+}
+
+void loop ()
+{
+  // check for incoming serial data:
+  if (Serial.available() > 0) {
+    // read incoming serial data:
+    char inChar = Serial.read();
+    pt_loop(inChar);
+    Serial.println("ok");
+  }
+}
+
+void pt_loop(char c)
+{
+  Serial.println(c);
+  Serial.println(c);
+}
