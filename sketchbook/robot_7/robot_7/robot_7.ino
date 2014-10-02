@@ -91,22 +91,22 @@ void pt_loop(char c)
   Serial.println(c);
 
   switch (c) {
-  case 'w':
+  case 's':
     go_forward();
     break;
-  case 'a':
+  case 'c':
     go_left();
     break;
-  case 'd':
+  case 'z':
     go_right();
     break;
-  case 's':
+  case 'w':
     go_backward(); 
     break;
-  case 'z':
+  case 'a':
     reverse_left();
     break;
-  case 'c':  
+  case 'd':  
     reverse_right();
     break;
   default:
