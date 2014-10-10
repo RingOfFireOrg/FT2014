@@ -7,10 +7,10 @@ int left = 0;
 Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
 // Connect two steppers with 200 steps per revolution (1.8 degree)
 // to the top shield
-Adafruit_StepperMotor *motor_right = AFMS.getStepper(200, 1);
-Adafruit_StepperMotor *motor_left = AFMS.getStepper(200, 2);
+Adafruit_StepperMotor *motor_right = AFMS.getStepper(200, 2);
+Adafruit_StepperMotor *motor_left = AFMS.getStepper(200, 1);
 
-#define STEP_TYPE INTERLEAVE
+#define STEP_TYPE MICROSTEP
 #define SPEED_LEVEL 50
 
 void forwardstep(Adafruit_StepperMotor *m) 
@@ -91,22 +91,22 @@ void pt_loop(char c)
   Serial.println(c);
 
   switch (c) {
-  case 'e':
+  case 'w':
     go_forward();
     break;
-  case 's':
+  case 'a':
     go_left();
     break;
-  case 'f':
+  case 'd':
     go_right();
     break;
-  case 'd':
+  case 's':
     go_backward(); 
     break;
-  case 'x':
+  case 'z':
     reverse_left();
     break;
-  case 'v':  
+  case 'c':  
     reverse_right();
     break;
   default:
