@@ -77,6 +77,7 @@ void loop ()
     char inChar = Serial.read();
     pt_loop(inChar);
     Serial.println("ok");
+   
   }
 }
 
