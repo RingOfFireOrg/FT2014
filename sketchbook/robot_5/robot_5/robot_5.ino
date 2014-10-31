@@ -59,8 +59,8 @@ void go_left(void){
 }
 
 void go_right(void){
-  	stepper1.moveTo(stepper1.currentPosition()+10);
-    	stepper2.moveTo(stepper2.currentPosition()+0);
+  	stepper1.moveTo(stepper1.currentPosition()+0);
+    	stepper2.moveTo(stepper2.currentPosition()+10);
    stepper1.run();
    stepper2.run();
 }
