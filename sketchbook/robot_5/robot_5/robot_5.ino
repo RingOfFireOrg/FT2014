@@ -29,15 +29,16 @@ Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 void forwardstep1() {  
   myStepper1->onestep(FORWARD, SINGLE);
 }
+
 void backwardstep1() {  
   myStepper1->onestep(BACKWARD, SINGLE);
 }
 // wrappers for the second motor!
 void forwardstep2() {  
-  myStepper2->onestep(FORWARD, DOUBLE);
+  myStepper2->onestep(FORWARD, SINGLE);
 }
 void backwardstep2() {  
-  myStepper2->onestep(BACKWARD, DOUBLE);
+  myStepper2->onestep(BACKWARD, SINGLE);
 }
 // Now we'll wrap the 3 steppers in an AccelStepper object
 AccelStepper stepper1(forwardstep1, backwardstep1);
@@ -45,10 +46,10 @@ AccelStepper stepper2(forwardstep2, backwardstep2);
 
 //Brysons code
 void go_forward(void){
-  	stepper1.moveTo(stepper1.currentPosition()+10);
-    	stepper2.moveTo(stepper2.currentPosition()+10);
-   stepper1.run();
-   stepper2.run();
+  	stepper1.moveTo(stepper1.currentPosition()+100);
+    	stepper2.moveTo(stepper2.currentPosition()+100);
+   stepper1.runSpeed();
+   stepper2.runSpeed();
 }
 
 void go_left(void){
@@ -60,7 +61,7 @@ void go_left(void){
 
 void go_right(void){
   	stepper1.moveTo(stepper1.currentPosition()+0);
-    	stepper2.moveTo(stepper2.currentPosition()+10);
+    	stepper2.moveTo(stepper2.currentPosition()+100);
    stepper1.run();
    stepper2.run();
 }
@@ -94,11 +95,13 @@ void setup ()
   Serial.println("");
   AFMStop.begin(); // Start the top shield
    
-  stepper1.setMaxSpeed(100.0);
-  stepper1.setAcceleration(100.0);
+  stepper1.setMaxSpeed(500.0);
+  stepper1.setAcceleration(200.0);
+  stepper1.setSpeed(500);  
     
-  stepper2.setMaxSpeed(200.0);
-  stepper2.setAcceleration(100.0);
+  stepper2.setMaxSpeed(500.0);
+  stepper2.setAcceleration(200.0);
+  stepper2.setSpeed(500); 
 }
 
 void loop ()
