@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
+#include <Servo.h>
 
 int left = 0;
 Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
@@ -10,8 +11,10 @@ Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
 Adafruit_StepperMotor *motor_right = AFMS.getStepper(200, 1);
 Adafruit_StepperMotor *motor_left = AFMS.getStepper(200, 2);
 
+
 #define STEP_TYPE INTERLEAVE
 #define SPEED_LEVEL 50
+Servo servoGate;
 
 void forwardstep(Adafruit_StepperMotor *m) 
 {  
@@ -67,6 +70,17 @@ void setup ()
   AFMS.begin();
   motor_right->setSpeed(SPEED_LEVEL);
   motor_left->setSpeed(SPEED_LEVEL);
+  servoGate.attach(9); 
+}
+
+void servo_a ()
+{
+    servoGate.write(-80);
+}
+
+void servo_b ()
+{
+    servoGate.write(90);              // tell servo to go to position in variable 'pos' 
 }
 
 void loop ()
@@ -108,6 +122,15 @@ void pt_loop(char c)
     break;
   case 'v':  
     reverse_right();
+    break;
+ case 'j':  
+    reverse_right();
+    break;
+ case '9':
+    servo_a();
+    break;
+ case '0':
+    servo_b();
     break;
   default:
     break;
