@@ -3,70 +3,111 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 
-int left = 0;
-Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
-// Connect two steppers with 200 steps per revolution (1.8 degree)
-// to the top shield
-Adafruit_StepperMotor *motor_right = AFMS.getStepper(200, 1);
-Adafruit_StepperMotor *motor_left = AFMS.getStepper(200, 2);
+//Adafruit_MotorShield AFMSbot(0x61); // Rightmost jumper closed
+Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
 
-#define STEP_TYPE INTERLEAVE
-#define SPEED_LEVEL 50
+Adafruit_StepperMotor *myStepper1 = AFMStop.getStepper(200, 1);
+Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 
-void forwardstep(Adafruit_StepperMotor *m) 
-{  
-  m->step(10, FORWARD, STEP_TYPE);
+boolean flip = false;
+boolean state1 = true, firstWiggle = true;
+long lastSwitch, switchTime = 2000; 
+
+void forwardstep1() {  
+  myStepper1->onestep(FORWARD, SINGLE);
 }
-void backwardstep(Adafruit_StepperMotor *m) 
-{  
-  m->step(10, BACKWARD, STEP_TYPE);
+void backwardstep1() {  
+  myStepper1->onestep(BACKWARD, SINGLE);
 }
-
-void go_forward(void)
-{
-  motor_right->step(5, FORWARD, STEP_TYPE);
-  motor_left->step(5, FORWARD, STEP_TYPE);
-  motor_right->step(5, FORWARD, STEP_TYPE);
-  motor_left->step(5, FORWARD, STEP_TYPE);
+// wrappers for the second motor!
+void forwardstep2() {  
+  myStepper2->onestep(FORWARD, DOUBLE);
 }
-
-void go_backward(void)
-{
-  motor_right->step(5, BACKWARD, STEP_TYPE);
-  motor_left->step(5, BACKWARD, STEP_TYPE);
-  motor_right->step(5, BACKWARD, STEP_TYPE);
-  motor_left->step(5, BACKWARD, STEP_TYPE);
+void backwardstep2() {  
+  myStepper2->onestep(BACKWARD, DOUBLE);
+}
+// Now we'll wrap the 3 steppers in an AccelStepper object
+AccelStepper stepper1(forwardstep1, backwardstep1);
+AccelStepper stepper2(forwardstep2, backwardstep2);
+//Brysons code
+void go_forward(void){
+  moveWheels(40,40);
 }
 
-void go_right(void) 
-{
-  motor_right->step(10, FORWARD, STEP_TYPE);
+void go_left(void){
+  moveWheels(0,40);
 }
 
-void go_left(void) 
-{
-  motor_left->step(10, FORWARD, STEP_TYPE);
+void go_right(void){
+  moveWheels(40,0);
 }
 
-void reverse_right(void) 
-{
-  motor_right->step(10, BACKWARD, STEP_TYPE);
+void go_backward(void){
+  moveWheels(-40,-40);
 }
 
-void reverse_left(void) 
-{
-  motor_left->step(10, BACKWARD, STEP_TYPE);
+void reverse_left(void){
+  moveWheels(-40,0);
+}
+
+void reverse_right(void){
+  moveWheels(0,-40);
+}
+
+void moveWheels(int wheel1, int wheel2) {
+  int lWheel, rWheel;
+  
+  if(flip) {
+    lWheel = wheel2;
+    rWheel = wheel1;
+  } else {
+    lWheel = wheel1;
+    rWheel = wheel2;
+  }
+  
+  stepper1.move(lWheel);
+  stepper2.move(rWheel);
+  
+  //while (stepper1.distanceToGo() != 0 && stepper2.distanceToGo() != 0) {
+    stepper1.run();
+    stepper2.run();
+  //}
+}
+
+void wiggle() {
+  if(firstWiggle) {
+    lastSwitch = millis();
+    firstWiggle = false;
+  }
+    
+  if(abs(millis() - lastSwitch) > switchTime) {
+    lastSwitch = millis();
+    state1 = !state1;
+  }  
+  
+  if(state1) {
+    moveWheels(20,-20);
+  } else {
+    moveWheels(-20,20);
+  }
 }
 
 void setup ()
 {
   // open the serial port:
   Serial.begin(9600);       
-  Serial.println("Robot 1");
+  Serial.println("Robot 5");
   Serial.println("");
-  AFMS.begin();
-  motor_right->setSpeed(SPEED_LEVEL);
-  motor_left->setSpeed(SPEED_LEVEL);
+  AFMStop.begin(); // Start the top shield
+   
+  stepper1.setMaxSpeed(100.0);
+  stepper1.setAcceleration(100.0);
+    
+  stepper2.setMaxSpeed(200.0);
+  stepper2.setAcceleration(100.0);
+  
+  stepper1.setSpeed(1000);
+  stepper2.setSpeed(1000);
 }
 
 void loop ()
@@ -77,6 +118,7 @@ void loop ()
     char inChar = Serial.read();
     pt_loop(inChar);
     Serial.println("ok");
+   
   }
 }
 
@@ -108,6 +150,9 @@ void pt_loop(char c)
     break;
   case 'v':  
     reverse_right();
+    break;
+  case 'z':
+    wiggle();
     break;
   default:
     break;
