@@ -11,7 +11,9 @@ Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 
 boolean flip = false;
 boolean state1 = true, firstWiggle = true;
-long lastSwitch, switchTime = 2000; 
+long lastSwitch, switchTime = 2000;
+
+#define STEP_TYPE SINGLE
 
 void forwardstep1() {  
   myStepper1->onestep(FORWARD, SINGLE);
@@ -100,14 +102,14 @@ void setup ()
   Serial.println("");
   AFMStop.begin(); // Start the top shield
    
-  stepper1.setMaxSpeed(100.0);
+  stepper1.setMaxSpeed(1000.0);
   stepper1.setAcceleration(100.0);
     
-  stepper2.setMaxSpeed(200.0);
+  stepper2.setMaxSpeed(1000.0);
   stepper2.setAcceleration(100.0);
   
-  stepper1.setSpeed(1000);
-  stepper2.setSpeed(1000);
+  stepper1.setSpeed(500);
+  stepper2.setSpeed(500);
 }
 
 void loop ()
