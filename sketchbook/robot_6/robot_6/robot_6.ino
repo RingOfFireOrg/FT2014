@@ -1,86 +1,107 @@
+// Shows how to run three Steppers at once with varying speeds
+//
+// Requires the Adafruit_Motorshield v2 library 
+//   https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library
+// And AccelStepper with AFMotor support 
+//   https://github.com/adafruit/AccelStepper
+
+// This tutorial is for Adafruit Motorshield v2 only!
+// Will not work with v1 shields
+
 #include <AccelStepper.h>
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
-#include <Servo.h>
 
-int left = 0;
-Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
+//Adafruit_MotorShield AFMSbot(0x61); // Rightmost jumper closed
+Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
+
 // Connect two steppers with 200 steps per revolution (1.8 degree)
 // to the top shield
-Adafruit_StepperMotor *motor_right = AFMS.getStepper(200, 1);
-Adafruit_StepperMotor *motor_left = AFMS.getStepper(200, 2);
+Adafruit_StepperMotor *myStepper1 = AFMStop.getStepper(200, 1);
+Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 
-
-#define STEP_TYPE INTERLEAVE
-#define SPEED_LEVEL 50
-Servo servoGate;
-
-void forwardstep(Adafruit_StepperMotor *m) 
-{  
-  m->step(10, FORWARD, STEP_TYPE);
-}
-void backwardstep(Adafruit_StepperMotor *m) 
-{  
-  m->step(10, BACKWARD, STEP_TYPE);
+// Connect one stepper with 200 steps per revolution (1.8 degree)
+// to the bottom shield
+//Adafruit_StepperMotor *myStepper3 = AFMSbot.getStepper(200, 2);
+// you can change these to DOUBLE or INTERLEAVE or MICROSTEP!
+// wrappers for the first motor!
+void forwardstep1() {  
+  myStepper1->onestep(FORWARD, SINGLE);
 }
 
-void go_forward(void)
-{
-  motor_right->step(5, FORWARD, STEP_TYPE);
-  motor_left->step(5, FORWARD, STEP_TYPE);
-  motor_right->step(5, FORWARD, STEP_TYPE);
-  motor_left->step(5, FORWARD, STEP_TYPE);
+void backwardstep1() {  
+  myStepper1->onestep(BACKWARD, SINGLE);
+}
+// wrappers for the second motor!
+void forwardstep2() {  
+  myStepper2->onestep(FORWARD, SINGLE);
+}
+void backwardstep2() {  
+  myStepper2->onestep(BACKWARD, SINGLE);
+}
+// Now we'll wrap the 3 steppers in an AccelStepper object
+AccelStepper stepper1(forwardstep1, backwardstep1);
+AccelStepper stepper2(forwardstep2, backwardstep2);
+
+//Brysons code
+void go_forward(void){
+  	stepper1.moveTo(stepper1.currentPosition()+100);
+    	stepper2.moveTo(stepper2.currentPosition()+100);
+   stepper1.runSpeed();
+   stepper2.runSpeed();
 }
 
-void go_backward(void)
-{
-  motor_right->step(5, BACKWARD, STEP_TYPE);
-  motor_left->step(5, BACKWARD, STEP_TYPE);
-  motor_right->step(5, BACKWARD, STEP_TYPE);
-  motor_left->step(5, BACKWARD, STEP_TYPE);
+void go_left(void){
+  	stepper1.moveTo(stepper1.currentPosition()+10);
+    	stepper2.moveTo(stepper2.currentPosition()+0);
+   stepper1.run();
+   stepper2.run();
 }
 
-void go_right(void) 
-{
-  motor_right->step(10, FORWARD, STEP_TYPE);
+void go_right(void){
+  	stepper1.moveTo(stepper1.currentPosition()+0);
+    	stepper2.moveTo(stepper2.currentPosition()+100);
+   stepper1.run();
+   stepper2.run();
 }
 
-void go_left(void) 
-{
-  motor_left->step(10, FORWARD, STEP_TYPE);
+void go_backward(void){
+  	stepper1.moveTo(stepper1.currentPosition()-10);
+    	stepper2.moveTo(stepper2.currentPosition()-10);
+   stepper1.run();
+   stepper2.run();
 }
 
-void reverse_right(void) 
-{
-  motor_right->step(10, BACKWARD, STEP_TYPE);
+void reverse_left(void){
+  	stepper1.moveTo(stepper1.currentPosition()+0);
+    	stepper2.moveTo(stepper2.currentPosition()-10);
+   stepper1.run();
+   stepper2.run();
 }
 
-void reverse_left(void) 
-{
-  motor_left->step(10, BACKWARD, STEP_TYPE);
+void reverse_right(void){
+  	stepper1.moveTo(stepper1.currentPosition()-10);
+    	stepper2.moveTo(stepper2.currentPosition()+0);
+   stepper1.run();
+   stepper2.run();
 }
 
 void setup ()
 {
   // open the serial port:
   Serial.begin(9600);       
-  Serial.println("Robot 6");
+  Serial.println("Robot 6 v2.0");
   Serial.println("");
-  AFMS.begin();
-  motor_right->setSpeed(SPEED_LEVEL);
-  motor_left->setSpeed(SPEED_LEVEL);
-  servoGate.attach(9); 
-}
-
-void servo_a ()
-{
-    servoGate.write(-80);
-}
-
-void servo_b ()
-{
-    servoGate.write(90);              // tell servo to go to position in variable 'pos' 
+  AFMStop.begin(); // Start the top shield
+   
+  stepper1.setMaxSpeed(500.0);
+  stepper1.setAcceleration(200.0);
+  stepper1.setSpeed(500);  
+    
+  stepper2.setMaxSpeed(500.0);
+  stepper2.setAcceleration(200.0);
+  stepper2.setSpeed(500); 
 }
 
 void loop ()
@@ -91,6 +112,7 @@ void loop ()
     char inChar = Serial.read();
     pt_loop(inChar);
     Serial.println("ok");
+   
   }
 }
 
@@ -105,32 +127,23 @@ void pt_loop(char c)
   Serial.println(c);
 
   switch (c) {
-  case 'e':
+  case 'w':
     go_forward();
     break;
-  case 's':
+  case 'a':
     go_left();
     break;
-  case 'f':
+  case 'd':
     go_right();
     break;
-  case 'd':
+  case 's':
     go_backward(); 
     break;
-  case 'x':
+  case 'z':
     reverse_left();
     break;
-  case 'v':  
+  case 'c':  
     reverse_right();
-    break;
- case 'j':  
-    reverse_right();
-    break;
- case '9':
-    servo_a();
-    break;
- case '0':
-    servo_b();
     break;
   default:
     break;
