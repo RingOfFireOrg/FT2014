@@ -41,19 +41,26 @@ void backwardstep2() {
   myStepper2->onestep(BACKWARD, SINGLE);
 }
 // Now we'll wrap the 3 steppers in an AccelStepper object
-AccelStepper stepper1(forwardstep1, backwardstep1);
-AccelStepper stepper2(forwardstep2, backwardstep2);
+AccelStepper stepper1(&forwardstep1, &backwardstep1);
+AccelStepper stepper2(&forwardstep2, &backwardstep2);
 
 //Brysons code
 void go_forward(void){
-  	stepper1.moveTo(stepper1.currentPosition()+100);
-    	stepper2.moveTo(stepper2.currentPosition()+100);
-   stepper1.runSpeed();
-   stepper2.runSpeed();
+  Serial.println("forward");
+  	stepper1.moveTo(stepper1.currentPosition()+1000);
+    	stepper2.moveTo(stepper2.currentPosition()+1000);
+   stepper1.run();
+   stepper2.run();
 }
-
+void go_backward(void){
+  Serial.println("backward");
+  	stepper1.moveTo(stepper1.currentPosition()-10);
+    	stepper2.moveTo(stepper2.currentPosition()-10);
+   stepper1.run();
+   stepper2.run();
+}
 void go_left(void){
-  	stepper1.moveTo(stepper1.currentPosition()+10);
+  	stepper1.moveTo(stepper1.currentPosition()+100);
     	stepper2.moveTo(stepper2.currentPosition()+0);
    stepper1.run();
    stepper2.run();
@@ -66,12 +73,6 @@ void go_right(void){
    stepper2.run();
 }
 
-void go_backward(void){
-  	stepper1.moveTo(stepper1.currentPosition()-10);
-    	stepper2.moveTo(stepper2.currentPosition()-10);
-   stepper1.run();
-   stepper2.run();
-}
 
 void reverse_left(void){
   	stepper1.moveTo(stepper1.currentPosition()+0);
@@ -129,6 +130,7 @@ void pt_loop(char c)
   switch (c) {
   case 'w':
     go_forward();
+    
     break;
   case 'a':
     go_left();
@@ -138,6 +140,7 @@ void pt_loop(char c)
     break;
   case 's':
     go_backward(); 
+        
     break;
   case 'z':
     reverse_left();
