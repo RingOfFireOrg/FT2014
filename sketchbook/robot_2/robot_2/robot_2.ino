@@ -109,6 +109,12 @@ void pt_loop(char c)
   case 'v':  
     reverse_right();
     break;
+  case 'i':  
+    in_mandables();
+    break;
+  case 'o':  
+    out_mandables();
+    break;
   default:
     break;
   }
