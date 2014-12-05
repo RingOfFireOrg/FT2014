@@ -2,6 +2,12 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
+#include <Servo.h> 
+ 
+Servo myservo;  // create servo object to control a servo 
+                // a maximum of eight servo objects can be created 
+ 
+int pos = 0;    // variable to store the servo position 
 
 int left = 0;
 Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
@@ -57,7 +63,32 @@ void reverse_left(void)
 {
   motor_left->step(10, BACKWARD, STEP_TYPE);
 }
-
+void in_mandables(void)
+{ 
+  for(pos = 0; pos < 180; pos += 1)  // goes from 0 degrees to 180 degrees 
+  {                                  // in steps of 1 degree 
+    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+  for(pos = 180; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
+  {                                
+    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+}
+void out_mandables(void)
+{ 
+  for(pos = 0; pos < 180; pos += 1)  // goes from 0 degrees to 180 degrees 
+  {                                  // in steps of 1 degree 
+    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+  for(pos = 180; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
+  {                                
+    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+}
 void setup ()
 {
   // open the serial port:
@@ -67,6 +98,8 @@ void setup ()
   AFMS.begin();
   motor_right->setSpeed(SPEED_LEVEL);
   motor_left->setSpeed(SPEED_LEVEL);
+  myservo.attach(9);  // attaches the servo on pin 9 to the servo object 
+// EDIT   myservo2.attach(10);   
 }
 
 void loop ()
@@ -91,16 +124,16 @@ void pt_loop(char c)
   Serial.println(c);
 
   switch (c) {
-  case 'w':
+  case 'e':
     go_forward();
     break;
-  case 'a':
+  case 's':
     go_left();
     break;
-  case 'd':
+  case 'f':
     go_right();
     break;
-  case 's':
+  case 'd':
     go_backward(); 
     break;
   case 'x':
@@ -109,12 +142,13 @@ void pt_loop(char c)
   case 'v':  
     reverse_right();
     break;
+  case 'i':  
+    in_mandables();
+    break;
+  case 'o':  
+    out_mandables();
+    break;
   default:
     break;
   }
 }
-
-
-
-
-eeeeee

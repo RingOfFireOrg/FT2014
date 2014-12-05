@@ -1,13 +1,3 @@
-// Shows how to run three Steppers at once with varying speeds
-//
-// Requires the Adafruit_Motorshield v2 library 
-//   https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library
-// And AccelStepper with AFMotor support 
-//   https://github.com/adafruit/AccelStepper
-
-// This tutorial is for Adafruit Motorshield v2 only!
-// Will not work with v1 shields
-
 #include <AccelStepper.h>
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
@@ -16,16 +6,15 @@
 //Adafruit_MotorShield AFMSbot(0x61); // Rightmost jumper closed
 Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
 
-// Connect two steppers with 200 steps per revolution (1.8 degree)
-// to the top shield
 Adafruit_StepperMotor *myStepper1 = AFMStop.getStepper(200, 1);
 Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 
-// Connect one stepper with 200 steps per revolution (1.8 degree)
-// to the bottom shield
-//Adafruit_StepperMotor *myStepper3 = AFMSbot.getStepper(200, 2);
-// you can change these to DOUBLE or INTERLEAVE or MICROSTEP!
-// wrappers for the first motor!
+boolean flip = false;
+boolean state1 = true, firstWiggle = true;
+long lastSwitch, switchTime = 2000;
+
+#define STEP_TYPE SINGLE
+
 void forwardstep1() {  
   myStepper1->onestep(FORWARD, SINGLE);
 }
@@ -42,48 +31,67 @@ void backwardstep2() {
 // Now we'll wrap the 3 steppers in an AccelStepper object
 AccelStepper stepper1(forwardstep1, backwardstep1);
 AccelStepper stepper2(forwardstep2, backwardstep2);
-int 
 //Brysons code
 void go_forward(void){
-  	stepper1.moveTo(stepper1.currentPosition()+10);
-    	stepper2.moveTo(stepper2.currentPosition()+10);
-   stepper1.run();
-   stepper2.run();
+  moveWheels(40,40);
 }
 
 void go_left(void){
-  	stepper1.moveTo(stepper1.currentPosition()+10);
-    	stepper2.moveTo(stepper2.currentPosition()+0);
-   stepper1.run();
-   stepper2.run();
+  moveWheels(0,40);
 }
 
 void go_right(void){
-  	stepper1.moveTo(stepper1.currentPosition()+0);
-    	stepper2.moveTo(stepper2.currentPosition()+10);
-   stepper1.run();
-   stepper2.run();
+  moveWheels(40,0);
 }
 
 void go_backward(void){
-  	stepper1.moveTo(stepper1.currentPosition()-10);
-    	stepper2.moveTo(stepper2.currentPosition()-10);
-   stepper1.run();
-   stepper2.run();
+  moveWheels(-40,-40);
 }
 
 void reverse_left(void){
-  	stepper1.moveTo(stepper1.currentPosition()+0);
-    	stepper2.moveTo(stepper2.currentPosition()-10);
-   stepper1.run();
-   stepper2.run();
+  moveWheels(-40,0);
 }
 
 void reverse_right(void){
-  	stepper1.moveTo(stepper1.currentPosition()-10);
-    	stepper2.moveTo(stepper2.currentPosition()+0);
-   stepper1.run();
-   stepper2.run();
+  moveWheels(0,-40);
+}
+
+void moveWheels(int wheel1, int wheel2) {
+  int lWheel, rWheel;
+  
+  if(flip) {
+    lWheel = wheel2;
+    rWheel = wheel1;
+  } else {
+    lWheel = wheel1;
+    rWheel = wheel2;
+  }
+  
+  stepper1.move(lWheel);
+  stepper2.move(rWheel);
+  
+  //while (stepper1.distanceToGo() != 0 && stepper2.distanceToGo() != 0) {
+    stepper1.run();
+    stepper2.run();
+  //}
+}
+
+void wiggle() {
+  if(firstWiggle) {
+    lastSwitch = millis();
+    firstWiggle = false;
+  }
+    
+  if(abs(millis() - lastSwitch) > switchTime) {
+    lastSwitch = millis();
+    state1 = !state1;
+  }  
+  
+  if(state1) {
+    moveWheels(20,-20);
+  } else {
+    moveWheels(-20,20);
+  }
 }
 
 void setup ()
@@ -94,11 +102,14 @@ void setup ()
   Serial.println("");
   AFMStop.begin(); // Start the top shield
    
-  stepper1.setMaxSpeed(100.0);
+  stepper1.setMaxSpeed(1000.0);
   stepper1.setAcceleration(100.0);
     
-  stepper2.setMaxSpeed(200.0);
+  stepper2.setMaxSpeed(1000.0);
   stepper2.setAcceleration(100.0);
+  
+  stepper1.setSpeed(500);
+  stepper2.setSpeed(500);
 }
 
 void loop ()
@@ -141,6 +152,9 @@ void pt_loop(char c)
     break;
   case 'v':  
     reverse_right();
+    break;
+  case 'z':
+    wiggle();
     break;
   default:
     break;
