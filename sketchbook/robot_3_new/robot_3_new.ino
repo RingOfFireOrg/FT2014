@@ -107,11 +107,17 @@ void wiggle() {
   else {
     moveWheels(-interval,interval);
   }
-  
-  
-  
-  
 }
+  
+  
+  void Brush (void)  {
+    stepper3.moveTo(stepper3.currentPosition()+300);
+  }
+  
+  void BackwardsBrush  (void)  {
+    stepper3.moveTo(stepper3.currentPosition()-300);
+  }
+
 
 void setup ()
 {
@@ -183,6 +189,13 @@ void pt_loop(char c)
   default:
     break;
   
+  case 'b':
+    Brush();
+    break;
+    
+     case 'n':
+    BackwardsBrush();
+    break;
 }
 
   stepper1.run();
