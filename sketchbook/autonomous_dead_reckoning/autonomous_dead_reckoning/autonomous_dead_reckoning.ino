@@ -120,7 +120,7 @@ void go_turn(int turn_angle)
   //2*pi*wheel_base*turnangle / 360 ... is inches
   //200 steps per wheel_diameter ... is steps/inch
   //2*pi*wheel_base*turnangle*200 / (360*wheel_diameter) is steps
-  double to_move = 2*pi*wheel_base*turn_angle*200 / (360*wheel_diameter);
+  double to_move = 2*3.14159*wheel_base*turn_angle*200 / (360*wheel_diameter);
   int steps = (int) to_move;
   if (turn_angle > 0)
   {
