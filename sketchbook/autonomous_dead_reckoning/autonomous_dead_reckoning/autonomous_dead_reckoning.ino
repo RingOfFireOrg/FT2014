@@ -21,6 +21,10 @@ Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
 Adafruit_StepperMotor *myStepper1 = AFMStop.getStepper(200, 1);
 Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 
+//Constants
+double wheel_base = 11;
+double wheel_diameter = 2.25;
+
 // Connect one stepper with 200 steps per revolution (1.8 degree)
 // to the bottom shield
 //Adafruit_StepperMotor *myStepper3 = AFMSbot.getStepper(200, 2);
@@ -109,6 +113,33 @@ void loop ()
   }
 }
 
+void go_turn(int turn_angle)
+{
+  //turn_angle is degrees
+  //2*pi*radius is circumference (inches / 360 degrees) ... thus 2*pi*wheel_base / 360 is inches/degree
+  //2*pi*wheel_base*turnangle / 360 ... is inches
+  //200 steps per wheel_diameter ... is steps/inch
+  //2*pi*wheel_base*turnangle*200 / (360*wheel_diameter) is steps
+  double to_move = 2*3.14159*wheel_base*turn_angle*200 / (360*wheel_diameter);
+  int steps = (int) to_move;
+  if (turn_angle > 0)
+  {
+    go_right(steps);
+  }
+  else if (turn_angle < 0)
+  {
+    go_left(steps);
+  }
+}
+
+void go_autonomous(int turn1, int move1, int turn2, int move2)
+{
+  go_turn(turn1);
+  go_forward(move1);
+  go_turn(turn2);
+  go_forward(move2);
+}
+
 /*
   PyroTech Loop - this is where you code goes. You will receive 
   one character "c" at a time, each time a key stroke is received 
@@ -118,41 +149,8 @@ void loop ()
 void pt_loop(char c)
 {
   switch (c) {
-  case 'e':
-    go_forward(300);
-    break;
-  case 's':
-    go_left(100);
-    break;
-  case 'f':
-    go_right(100);
-    break;
-  case 'd':
-    go_backward(300); 
-    break;
-  case 'x':
-    reverse_left(100);
-    break;
-  case 'v':  
-    reverse_right(100);
-    break;
-  case 'i':
-    go_forward(3);
-    break;
-  case 'j':
-    go_left(1);
-    break;
-  case 'l':
-    go_right(1);
-    break;
-  case 'k':
-    go_backward(3); 
-    break;
-  case 'm':
-    reverse_left(1);
-    break;
-  case '.':  
-    reverse_right(1);
+  case 'A':
+    go_autonomous(-135, 300, -90, 300);
     break;
   default:
     break;

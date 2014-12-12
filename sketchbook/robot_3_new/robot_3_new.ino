@@ -3,11 +3,14 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 
-//Adafruit_MotorShield AFMSbot(0x61); // Rightmost jumper closed
-Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
 
-Adafruit_StepperMotor *myStepper1 = AFMStop.getStepper(200, 1);
-Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
+Adafruit_MotorShield AFMSbot(0x60); // Default address, no jumpers
+Adafruit_MotorShield AFMSTop(0x61); // Rightmost jumper closed
+
+Adafruit_StepperMotor *myStepper1 = AFMSTop.getStepper(200, 1);
+Adafruit_StepperMotor *myStepper2 = AFMSTop.getStepper(200, 2);
+Adafruit_StepperMotor *mystepper3 = AFMSbot.getStepper(200, 2);
+
 
 boolean flip = false;
 boolean state1 = true, firstWiggle = true;
@@ -24,14 +27,25 @@ void backwardstep1() {
 }
 // wrappers for the second motor!
 void forwardstep2() {  
-  myStepper2->onestep(FORWARD, DOUBLE);
+  myStepper2->onestep(FORWARD, SINGLE);
 }
 void backwardstep2() {  
-  myStepper2->onestep(BACKWARD, DOUBLE);
+  myStepper2->onestep(BACKWARD, SINGLE);
 }
+
+void forwardstep3() {  
+  mystepper3->onestep(FORWARD, DOUBLE);
+}
+void backwardstep3() {  
+  mystepper3->onestep(BACKWARD, DOUBLE);
+}
+
+
+
 // Now we'll wrap the 3 steppers in an AccelStepper object
 AccelStepper stepper1(forwardstep1, backwardstep1);
 AccelStepper stepper2(forwardstep2, backwardstep2);
+AccelStepper stepper3(forwardstep3, backwardstep3);
 //Brysons code
 void go_forward(void){
   moveWheels(interval,interval);
@@ -72,7 +86,7 @@ void moveWheels(int wheel1, int wheel2) {
   stepper1.move(lWheel);
   stepper2.move(rWheel);
 
-  
+
   //}
 }
 
@@ -94,6 +108,16 @@ void wiggle() {
     moveWheels(-interval,interval);
   }
 }
+  
+  
+  void Brush (void)  {
+    stepper3.moveTo(stepper3.currentPosition()+300);
+  }
+  
+  void BackwardsBrush  (void)  {
+    stepper3.moveTo(stepper3.currentPosition()-300);
+  }
+
 
 void setup ()
 {
@@ -101,16 +125,20 @@ void setup ()
   Serial.begin(9600);       
   Serial.println("Robot 5");
   Serial.println("");
-  AFMStop.begin(); // Start the top shield
-
+  AFMSTop.begin(); // Start the top shield
+  AFMSbot.begin(); // start the bottom shield
   stepper1.setMaxSpeed(1000.0);
   stepper1.setAcceleration(100.0);
 
   stepper2.setMaxSpeed(1000.0);
   stepper2.setAcceleration(100.0);
-
+  
+  stepper3.setMaxSpeed(1000.0);
+  stepper3.setAcceleration(100.0);
+  
   stepper1.setSpeed(500);
   stepper2.setSpeed(500);
+  stepper3.setSpeed(500);
 }
 
 void loop ()
@@ -122,7 +150,8 @@ void loop ()
     pt_loop(inChar);
     //Serial.println(c);
     Serial.println("ok");
-  } else {
+  } 
+  else {
     pt_loop('q');
   }
 }
@@ -159,14 +188,18 @@ void pt_loop(char c)
     break;
   default:
     break;
-  }
   
-  stepper1.run();
-  stepper2.run();
+  case 'b':
+    Brush();
+    break;
+    
+     case 'n':
+    BackwardsBrush();
+    break;
 }
 
-
-
-
-
+  stepper1.run();
+  stepper2.run();
+  stepper3.run();
+}
 
