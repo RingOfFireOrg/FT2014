@@ -52,43 +52,31 @@ AccelStepper stepper2(forwardstep2, backwardstep2);
 void go_forward(void){
   	stepper1.moveTo(stepper1.currentPosition()+100);
     	stepper2.moveTo(stepper2.currentPosition()+100);
-   stepper1.runSpeed();
-   stepper2.runSpeed();
 }
 
 void go_left(void){
-  	stepper1.moveTo(stepper1.currentPosition()+10);
+  	stepper1.moveTo(stepper1.currentPosition()+100);
     	stepper2.moveTo(stepper2.currentPosition()+0);
-   stepper1.run();
-   stepper2.run();
 }
 
 void go_right(void){
   	stepper1.moveTo(stepper1.currentPosition()+0);
     	stepper2.moveTo(stepper2.currentPosition()+100);
-   stepper1.run();
-   stepper2.run();
 }
 
 void go_backward(void){
-  	stepper1.moveTo(stepper1.currentPosition()-10);
-    	stepper2.moveTo(stepper2.currentPosition()-10);
-   stepper1.run();
-   stepper2.run();
+  	stepper1.moveTo(stepper1.currentPosition()-100);
+    	stepper2.moveTo(stepper2.currentPosition()-100);
 }
 
 void reverse_left(void){
   	stepper1.moveTo(stepper1.currentPosition()+0);
-    	stepper2.moveTo(stepper2.currentPosition()-10);
-   stepper1.run();
-   stepper2.run();
+    	stepper2.moveTo(stepper2.currentPosition()-100);
 }
 
 void reverse_right(void){
-  	stepper1.moveTo(stepper1.currentPosition()-10);
+  	stepper1.moveTo(stepper1.currentPosition()-100);
     	stepper2.moveTo(stepper2.currentPosition()+0);
-   stepper1.run();
-   stepper2.run();
 }
 
 void setup ()
@@ -118,7 +106,10 @@ void loop ()
     char inChar = Serial.read();
     pt_loop(inChar);
     Serial.println("ok");
-   
+  }
+  else
+  {
+    pt_loop('q');
   }
 }
 
@@ -130,8 +121,6 @@ void loop ()
 */
 void pt_loop(char c)
 {
-  Serial.println(c);
-
   switch (c) {
   case 'w':
     go_forward();
@@ -145,10 +134,10 @@ void pt_loop(char c)
   case 's':
     go_backward(); 
     break;
-  case 'q':
+  case 'z':
     reverse_left();
     break;
-  case 'e':  
+  case 'c':  
     reverse_right();
     break;
     
@@ -165,6 +154,8 @@ void pt_loop(char c)
   default:
     break;
   }
+ stepper1.run();
+ stepper2.run();
 }
 
 
