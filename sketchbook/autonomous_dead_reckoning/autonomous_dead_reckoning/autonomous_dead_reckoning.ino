@@ -22,8 +22,9 @@ Adafruit_StepperMotor *myStepper1 = AFMStop.getStepper(200, 1);
 Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 
 //Constants
-double wheel_base = 11;
-double wheel_diameter = 2.25;
+double wheel_base = 13.5;
+double wheel_diameter = 2.5;
+int counter = 0;
 
 // Connect one stepper with 200 steps per revolution (1.8 degree)
 // to the bottom shield
@@ -51,17 +52,21 @@ AccelStepper stepper2(forwardstep2, backwardstep2);
 
 //Brysons code
 void go_forward(int dist){
+        Serial.print("F:");
+        Serial.println(dist);
   	stepper1.moveTo(stepper1.currentPosition()+dist);
     	stepper2.moveTo(stepper2.currentPosition()+dist);
 }
 
 void go_left(int dist){
+        Serial.print("L:");
+        Serial.println(dist);
   	stepper1.moveTo(stepper1.currentPosition()+dist);
-    	stepper2.moveTo(stepper2.currentPosition()+0);
+    	//stepper2.moveTo(stepper2.currentPosition()+0);
 }
 
 void go_right(int dist){
-  	stepper1.moveTo(stepper1.currentPosition()+0);
+  	//stepper1.moveTo(stepper1.currentPosition()+0);
     	stepper2.moveTo(stepper2.currentPosition()+dist);
 }
 
@@ -120,7 +125,7 @@ void go_turn(int turn_angle)
   //2*pi*wheel_base*turnangle / 360 ... is inches
   //200 steps per wheel_diameter ... is steps/inch
   //2*pi*wheel_base*turnangle*200 / (360*wheel_diameter) is steps
-  double to_move = 2*3.14159*wheel_base*turn_angle*200 / (360*wheel_diameter);
+  double to_move = 2*wheel_base*turn_angle*200 / (360*wheel_diameter);
   int steps = (int) to_move;
   if (turn_angle > 0)
   {
@@ -128,16 +133,18 @@ void go_turn(int turn_angle)
   }
   else if (turn_angle < 0)
   {
-    go_left(steps);
+    go_left(-steps);
   }
+  Serial.print("Moving STeps: ");
+  Serial.println(steps);
 }
 
 void go_autonomous(int turn1, int move1, int turn2, int move2)
 {
   go_turn(turn1);
   go_forward(move1);
-  go_turn(turn2);
-  go_forward(move2);
+  //go_turn(turn2);
+  //go_forward(move2);
 }
 
 /*
@@ -150,7 +157,7 @@ void pt_loop(char c)
 {
   switch (c) {
   case 'A':
-    go_autonomous(-135, 300, -90, 300);
+    go_autonomous(135, 300, 90, 300);
     break;
   default:
     break;
