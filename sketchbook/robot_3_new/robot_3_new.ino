@@ -1,5 +1,6 @@
 #include <AccelStepper.h>
 #include <Wire.h>
+#include <Servo.h> 
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 
@@ -11,12 +12,16 @@ Adafruit_StepperMotor *myStepper1 = AFMSTop.getStepper(200, 1);
 Adafruit_StepperMotor *myStepper2 = AFMSTop.getStepper(200, 2);
 Adafruit_StepperMotor *mystepper3 = AFMSbot.getStepper(200, 2);
 
+Servo myservo;  // create servo object to control a servo 
+                // a maximum of eight servo objects can be created 
+  int pos = 0;    // variable to store the servo position 
+
 
 boolean flip = false;
 boolean state1 = true, firstWiggle = true;
 long lastSwitch, switchTime = 2000;
-double interval = 10;
-
+double interval = 50;
+g
 #define STEP_TYPE DOUBLE;
 
 void forwardstep1() {  
@@ -139,7 +144,12 @@ void setup ()
   stepper1.setSpeed(500);
   stepper2.setSpeed(500);
   stepper3.setSpeed(500);
+  
+  { 
+  myservo.attach(9);  // attaches the servo on pin 9 to the servo object 
+} 
 }
+
 
 void loop ()
 {
@@ -154,6 +164,13 @@ void loop ()
   else {
     pt_loop('q');
   }
+  
+  
+  
+ 
+  
+  
+  
 }
 
 /*
