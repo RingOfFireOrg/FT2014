@@ -27,64 +27,53 @@ Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 // you can change these to DOUBLE or INTERLEAVE or MICROSTEP!
 // wrappers for the first motor!
 void forwardstep1() {  
-  myStepper1->onestep(FORWARD, SINGLE);
+  myStepper1->onestep(FORWARD, DOUBLE);
 }
 
 void backwardstep1() {  
-  myStepper1->onestep(BACKWARD, SINGLE);
+  myStepper1->onestep(BACKWARD, DOUBLE);
 }
 // wrappers for the second motor!
 void forwardstep2() {  
-  myStepper2->onestep(FORWARD, SINGLE);
+  myStepper2->onestep(FORWARD, DOUBLE);
 }
 void backwardstep2() {  
-  myStepper2->onestep(BACKWARD, SINGLE);
+  myStepper2->onestep(BACKWARD, DOUBLE);
 }
+
 // Now we'll wrap the 3 steppers in an AccelStepper object
 AccelStepper stepper1(forwardstep1, backwardstep1);
 AccelStepper stepper2(forwardstep2, backwardstep2);
 
 //Brysons code
-void go_forward(void){
-  	stepper1.moveTo(stepper1.currentPosition()+100);
-    	stepper2.moveTo(stepper2.currentPosition()+100);
-   stepper1.runSpeed();
-   stepper2.runSpeed();
+void go_forward(int dist){
+  	stepper1.moveTo(stepper1.currentPosition()+dist);
+    	stepper2.moveTo(stepper2.currentPosition()+dist);
 }
 
-void go_left(void){
-  	stepper1.moveTo(stepper1.currentPosition()+10);
+void go_left(int dist){
+  	stepper1.moveTo(stepper1.currentPosition()+dist);
     	stepper2.moveTo(stepper2.currentPosition()+0);
-   stepper1.run();
-   stepper2.run();
 }
 
-void go_right(void){
+void go_right(int dist){
   	stepper1.moveTo(stepper1.currentPosition()+0);
-    	stepper2.moveTo(stepper2.currentPosition()+100);
-   stepper1.run();
-   stepper2.run();
+    	stepper2.moveTo(stepper2.currentPosition()+dist);
 }
 
-void go_backward(void){
-  	stepper1.moveTo(stepper1.currentPosition()-10);
-    	stepper2.moveTo(stepper2.currentPosition()-10);
-   stepper1.run();
-   stepper2.run();
+void go_backward(int dist){
+  	stepper1.moveTo(stepper1.currentPosition()-dist);
+    	stepper2.moveTo(stepper2.currentPosition()-dist);
 }
 
-void reverse_left(void){
+void reverse_left(int dist){
   	stepper1.moveTo(stepper1.currentPosition()+0);
-    	stepper2.moveTo(stepper2.currentPosition()-10);
-   stepper1.run();
-   stepper2.run();
+    	stepper2.moveTo(stepper2.currentPosition()-dist);
 }
 
-void reverse_right(void){
-  	stepper1.moveTo(stepper1.currentPosition()-10);
+void reverse_right(int dist){
+  	stepper1.moveTo(stepper1.currentPosition()-dist);
     	stepper2.moveTo(stepper2.currentPosition()+0);
-   stepper1.run();
-   stepper2.run();
 }
 
 void setup ()
@@ -96,11 +85,11 @@ void setup ()
   AFMStop.begin(); // Start the top shield
    
   stepper1.setMaxSpeed(500.0);
-  stepper1.setAcceleration(200.0);
+  stepper1.setAcceleration(500.0);
   stepper1.setSpeed(500);  
     
   stepper2.setMaxSpeed(500.0);
-  stepper2.setAcceleration(200.0);
+  stepper2.setAcceleration(500.0);
   stepper2.setSpeed(500); 
 }
 
@@ -114,6 +103,10 @@ void loop ()
     Serial.println("ok");
    
   }
+  else
+  {
+    pt_loop('q');
+  }
 }
 
 /*
@@ -124,30 +117,49 @@ void loop ()
 */
 void pt_loop(char c)
 {
-  Serial.println(c);
-
   switch (c) {
   case 'e':
-    go_forward();
+    go_forward(300);
     break;
   case 's':
-    go_left();
+    go_left(100);
     break;
   case 'f':
-    go_right();
+    go_right(100);
     break;
   case 'd':
-    go_backward(); 
+    go_backward(300); 
     break;
   case 'x':
-    reverse_left();
+    reverse_left(100);
     break;
   case 'v':  
-    reverse_right();
+    reverse_right(100);
+    break;
+  case 'i':
+    go_forward(3);
+    break;
+  case 'j':
+    go_left(1);
+    break;
+  case 'l':
+    go_right(1);
+    break;
+  case 'k':
+    go_backward(3); 
+    break;
+  case 'm':
+    reverse_left(1);
+    break;
+  case '.':  
+    reverse_right(1);
     break;
   default:
     break;
   }
+
+   stepper1.run();
+   stepper2.run();
 }
 
 

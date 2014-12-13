@@ -72,7 +72,7 @@ void setup ()
 {
   // open the serial port:
   Serial.begin(9600);       
-  Serial.println("Robot 3");
+  Serial.println("Robot 3 - Praise Fred");
   Serial.println("");
   AFMS.begin();
   motor_right->setSpeed(SPEED_LEVEL);
@@ -101,22 +101,22 @@ void pt_loop(char c)
   Serial.println(c);
 
   switch (c) {
-  case 'e':
+  case 'w':
     go_forward();
     break;
-  case 's':
+  case 'a':
     go_left();
     break;
-  case 'f':
+  case 'd':
     go_right();
     break;
-  case 'd':
+  case 's':
     go_backward(); 
     break;
-  case 'x':
+  case 'z':
     reverse_left();
     break;
-  case 'v':  
+  case 'c':  
     reverse_right();
     break;
   default:

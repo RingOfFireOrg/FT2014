@@ -1,3 +1,4 @@
+// Shows how to run three Steppers at once with varying speeds
 //
 // Requires the Adafruit_Motorshield v2 library 
 //   https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library
@@ -12,8 +13,6 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 
-#include <Servo.h>
-
 //Adafruit_MotorShield AFMSbot(0x61); // Rightmost jumper closed
 Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
 
@@ -22,8 +21,10 @@ Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
 Adafruit_StepperMotor *myStepper1 = AFMStop.getStepper(200, 1);
 Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 
-Servo servo1;
-Servo servo2;
+//Constants
+double wheel_base = 13.5;
+double wheel_diameter = 2.5;
+int counter = 0;
 
 // Connect one stepper with 200 steps per revolution (1.8 degree)
 // to the bottom shield
@@ -31,51 +32,56 @@ Servo servo2;
 // you can change these to DOUBLE or INTERLEAVE or MICROSTEP!
 // wrappers for the first motor!
 void forwardstep1() {  
-  myStepper1->onestep(FORWARD, SINGLE);
+  myStepper1->onestep(FORWARD, DOUBLE);
 }
 
 void backwardstep1() {  
-  myStepper1->onestep(BACKWARD, SINGLE);
+  myStepper1->onestep(BACKWARD, DOUBLE);
 }
 // wrappers for the second motor!
 void forwardstep2() {  
-  myStepper2->onestep(FORWARD, SINGLE);
+  myStepper2->onestep(FORWARD, DOUBLE);
 }
 void backwardstep2() {  
-  myStepper2->onestep(BACKWARD, SINGLE);
+  myStepper2->onestep(BACKWARD, DOUBLE);
 }
+
 // Now we'll wrap the 3 steppers in an AccelStepper object
 AccelStepper stepper1(forwardstep1, backwardstep1);
 AccelStepper stepper2(forwardstep2, backwardstep2);
 
 //Brysons code
-void go_forward(void){
-  	stepper1.moveTo(stepper1.currentPosition()+100);
-    	stepper2.moveTo(stepper2.currentPosition()+100);
+void go_forward(int dist){
+        Serial.print("F:");
+        Serial.println(dist);
+  	stepper1.moveTo(stepper1.currentPosition()+dist);
+    	stepper2.moveTo(stepper2.currentPosition()+dist);
 }
 
-void go_left(void){
-  	stepper1.moveTo(stepper1.currentPosition()+100);
-    	stepper2.moveTo(stepper2.currentPosition()+0);
+void go_left(int dist){
+        Serial.print("L:");
+        Serial.println(dist);
+  	stepper1.moveTo(stepper1.currentPosition()+dist);
+    	//stepper2.moveTo(stepper2.currentPosition()+0);
 }
 
-void go_right(void){
+void go_right(int dist){
+  	//stepper1.moveTo(stepper1.currentPosition()+0);
+    	stepper2.moveTo(stepper2.currentPosition()+dist);
+}
+
+void go_backward(int dist){
+  	stepper1.moveTo(stepper1.currentPosition()-dist);
+    	stepper2.moveTo(stepper2.currentPosition()-dist);
+}
+
+void reverse_left(int dist){
   	stepper1.moveTo(stepper1.currentPosition()+0);
-    	stepper2.moveTo(stepper2.currentPosition()+100);
+    	stepper2.moveTo(stepper2.currentPosition()-dist);
 }
 
-void go_backward(void){
-  	stepper1.moveTo(stepper1.currentPosition()-100);
-    	stepper2.moveTo(stepper2.currentPosition()-100);
-}
-
-void reverse_left(void){
-  	stepper1.moveTo(stepper1.currentPosition()+0);
-    	stepper2.moveTo(stepper2.currentPosition()-100);
-}
-
-void reverse_right(void){
-  	stepper1.moveTo(stepper1.currentPosition()-100);
+void reverse_right(int dist){
+  	stepper1.moveTo(stepper1.currentPosition()-dist);
     	stepper2.moveTo(stepper2.currentPosition()+0);
 }
 
@@ -83,18 +89,16 @@ void setup ()
 {
   // open the serial port:
   Serial.begin(9600);       
-  Serial.println("Robot 4");
+  Serial.println("Robot 5");
   Serial.println("");
-  servo1.attach(10); //servo one on left
-  servo2.attach(11);
   AFMStop.begin(); // Start the top shield
    
   stepper1.setMaxSpeed(500.0);
-  stepper1.setAcceleration(200.0);
+  stepper1.setAcceleration(500.0);
   stepper1.setSpeed(500);  
     
   stepper2.setMaxSpeed(500.0);
-  stepper2.setAcceleration(200.0);
+  stepper2.setAcceleration(500.0);
   stepper2.setSpeed(500); 
 }
 
@@ -106,11 +110,41 @@ void loop ()
     char inChar = Serial.read();
     pt_loop(inChar);
     Serial.println("ok");
+   
   }
   else
   {
     pt_loop('q');
   }
+}
+
+void go_turn(int turn_angle)
+{
+  //turn_angle is degrees
+  //2*pi*radius is circumference (inches / 360 degrees) ... thus 2*pi*wheel_base / 360 is inches/degree
+  //2*pi*wheel_base*turnangle / 360 ... is inches
+  //200 steps per wheel_diameter ... is steps/inch
+  //2*pi*wheel_base*turnangle*200 / (360*wheel_diameter) is steps
+  double to_move = 2*wheel_base*turn_angle*200 / (360*wheel_diameter);
+  int steps = (int) to_move;
+  if (turn_angle > 0)
+  {
+    go_right(steps);
+  }
+  else if (turn_angle < 0)
+  {
+    go_left(-steps);
+  }
+  Serial.print("Moving STeps: ");
+  Serial.println(steps);
+}
+
+void go_autonomous(int turn1, int move1, int turn2, int move2)
+{
+  go_turn(turn1);
+  go_forward(move1);
+  //go_turn(turn2);
+  //go_forward(move2);
 }
 
 /*
@@ -122,40 +156,15 @@ void loop ()
 void pt_loop(char c)
 {
   switch (c) {
-  case 'w':
-    go_forward();
+  case 'A':
+    go_autonomous(135, 300, 90, 300);
     break;
-  case 'a':
-    go_left();
-    break;
-  case 'd':
-    go_right();
-    break;
-  case 's':
-    go_backward(); 
-    break;
-  case 'z':
-    reverse_left();
-    break;
-  case 'c':  
-    reverse_right();
-    break;
-    
-  case '9': //Down
-    servo1.write(map(0, 0, 255, 0, 180));
-    servo2.write(map(180, 0, 255, 0, 180));
-    break;
-    
-  case '0':  //Up
-    servo1.write(map(115, 0, 255, 0, 180));
-    servo2.write(map(65, 0, 255, 0, 180));
-    break;
-    
   default:
     break;
   }
- stepper1.run();
- stepper2.run();
+
+   stepper1.run();
+   stepper2.run();
 }
 
 
