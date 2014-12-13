@@ -3,10 +3,10 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 #include <Servo.h> 
- 
+
 Servo myservo;  // create servo object to control a servo 
-                // a maximum of eight servo objects can be created 
- 
+// a maximum of eight servo objects can be created 
+
 int pos = 0;    // variable to store the servo position 
 
 int left = 0;
@@ -16,7 +16,7 @@ Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
 Adafruit_StepperMotor *motor_right = AFMS.getStepper(200, 1);
 Adafruit_StepperMotor *motor_left = AFMS.getStepper(200, 2);
 
-#define STEP_TYPE INTERLEAVE
+#define STEP_TYPE DOUBLE
 #define SPEED_LEVEL 50
 
 void forwardstep(Adafruit_StepperMotor *m) 
@@ -65,16 +65,34 @@ void reverse_left(void)
 }
 void in_mandables(void)
 { 
-  for(pos = 0; pos < 180; pos += 1)  // goes from 0 degrees to 180 degrees 
+  for(pos = 0; pos < 90; pos += 1)  // goes from 0 degrees to 90 degrees 
   {                                  // in steps of 1 degree 
     myservo.write(pos);              // tell servo to go to position in variable 'pos' 
     delay(15);                       // waits 15ms for the servo to reach the position 
   } 
-  for(pos = 180; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
-  {                                
-    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
+}
+
+//  for(pos = 180; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
+//  {                                
+//    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
+//    delay(15);                       // waits 15ms for the servo to reach the position 
+//  } 
+// }
+void in_step(void)
+{ 
+  for(pos = pos; pos < 45; pos += 1)  // goes from 0 degrees to 90 degrees 
+  {                                  // in steps of 1 degree 
+  myservo.write(pos);
+    myservo.write(pos + 1);              // tell servo to go to position in variable 'pos' 
     delay(15);                       // waits 15ms for the servo to reach the position 
-  } 
+  
+
+ for(pos = 180; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
+  {                                
+  myservo.write(pos);              // tell servo to go to position in variable 'pos' 
+   delay(15);                       // waits 15ms for the servo to reach the position 
+ } 
+}
 }
 void out_mandables(void)
 { 
@@ -99,7 +117,8 @@ void setup ()
   motor_right->setSpeed(SPEED_LEVEL);
   motor_left->setSpeed(SPEED_LEVEL);
   myservo.attach(9);  // attaches the servo on pin 9 to the servo object 
-// EDIT   myservo2.attach(10);   
+  myservo.write(90);  // set servo to mid-point
+  // EDIT   myservo2.attach(10);   
 }
 
 void loop ()
@@ -115,10 +134,10 @@ void loop ()
 
 /*
   PyroTech Loop - this is where you code goes. You will receive 
-  one character "c" at a time, each time a key stroke is received 
-  from the keyboard drivers station.  You can choose to have your 
-  code do whatever you want when that character arrives.
-*/
+ one character "c" at a time, each time a key stroke is received 
+ from the keyboard drivers station.  You can choose to have your 
+ code do whatever you want when that character arrives.
+ */
 void pt_loop(char c)
 {
   Serial.println(c);
@@ -145,6 +164,9 @@ void pt_loop(char c)
   case 'i':  
     in_mandables();
     break;
+  case 'u':  
+    in_step();
+    break;
   case 'o':  
     out_mandables();
     break;
@@ -152,3 +174,5 @@ void pt_loop(char c)
     break;
   }
 }
+
+
