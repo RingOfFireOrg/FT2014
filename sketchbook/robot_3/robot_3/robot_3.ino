@@ -1,14 +1,17 @@
 #include <AccelStepper.h>
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
+//
 #include "utility/Adafruit_PWMServoDriver.h"
 
 int left = 0;
-Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
+Adafruit_MotorShield AFMS(0x60); // default address 0x60
+Adafruit_MotorShield AFMS2(0x61); // next address 0x61
 // Connect two steppers with 200 steps per revolution (1.8 degree)
 // to the top shield
 Adafruit_StepperMotor *motor_right = AFMS.getStepper(200, 1);
 Adafruit_StepperMotor *motor_left = AFMS.getStepper(200, 2);
+Adafruit_StepperMotor *motor_arm = AFMS2.getStepper(200, 1);
 
 #define STEP_TYPE INTERLEAVE
 #define SPEED_LEVEL 50
@@ -57,6 +60,13 @@ void reverse_left(void)
 {
   motor_left->step(10, BACKWARD, STEP_TYPE);
 }
+
+void arm_up(void)
+{
+  motor_arm->step(10, BACKWARD, STEP_TYPE);
+}
+
+
 
 void setup ()
 {
