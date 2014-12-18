@@ -13,15 +13,15 @@ Adafruit_StepperMotor *myStepper2 = AFMSTop.getStepper(200, 2);
 Adafruit_StepperMotor *mystepper3 = AFMSbot.getStepper(200, 2);
 
 Servo myservo;  // create servo object to control a servo 
-                // a maximum of eight servo objects can be created 
-  int pos = 0;    // variable to store the servo position 
+// a maximum of eight servo objects can be created 
+int pos = 0;    // variable to store the servo position 
 
 
 boolean flip = false;
 boolean state1 = true, firstWiggle = true;
 long lastSwitch, switchTime = 2000;
 double interval = 50;
-g
+
 #define STEP_TYPE DOUBLE;
 
 void forwardstep1() {  
@@ -113,15 +113,15 @@ void wiggle() {
     moveWheels(-interval,interval);
   }
 }
-  
-  
-  void Brush (void)  {
-    stepper3.moveTo(stepper3.currentPosition()+300);
-  }
-  
-  void BackwardsBrush  (void)  {
-    stepper3.moveTo(stepper3.currentPosition()-300);
-  }
+
+
+void Brush (void)  {
+  stepper3.moveTo(stepper3.currentPosition()+300);
+}
+
+void BackwardsBrush  (void)  {
+  stepper3.moveTo(stepper3.currentPosition()-300);
+}
 
 
 void setup ()
@@ -137,17 +137,17 @@ void setup ()
 
   stepper2.setMaxSpeed(1000.0);
   stepper2.setAcceleration(100.0);
-  
+
   stepper3.setMaxSpeed(1000.0);
   stepper3.setAcceleration(100.0);
-  
+
   stepper1.setSpeed(500);
   stepper2.setSpeed(500);
   stepper3.setSpeed(500);
-  
+
   { 
-  myservo.attach(9);  // attaches the servo on pin 9 to the servo object 
-} 
+    myservo.attach(9);  // attaches the servo on pin 9 to the servo object 
+  } 
 }
 
 
@@ -164,13 +164,13 @@ void loop ()
   else {
     pt_loop('q');
   }
-  
-  
-  
- 
-  
-  
-  
+
+
+
+
+
+
+
 }
 
 /*
@@ -205,18 +205,19 @@ void pt_loop(char c)
     break;
   default:
     break;
-  
+
   case 'b':
     Brush();
     break;
-    
-     case 'n':
+
+  case 'n':
     BackwardsBrush();
     break;
-}
+  }
 
   stepper1.run();
   stepper2.run();
   stepper3.run();
 }
+
 

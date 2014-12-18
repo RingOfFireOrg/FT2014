@@ -12,6 +12,15 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
+#include <Servo.h> 
+
+Servo myservo;  // create servo object to control a servo 
+// a maximum of eight servo objects can be created 
+
+int pos = 0;    // variable to store the servo position 
+
+int left = 0;
+
 
 //Adafruit_MotorShield AFMSbot(0x61); // Rightmost jumper closed
 Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
@@ -27,18 +36,18 @@ Adafruit_StepperMotor *myStepper2 = AFMStop.getStepper(200, 2);
 // you can change these to DOUBLE or INTERLEAVE or MICROSTEP!
 // wrappers for the first motor!
 void forwardstep1() {  
-  myStepper1->onestep(FORWARD, SINGLE);
+  myStepper1->onestep(FORWARD, DOUBLE);
 }
 
 void backwardstep1() {  
-  myStepper1->onestep(BACKWARD, SINGLE);
+  myStepper1->onestep(BACKWARD, DOUBLE);
 }
 // wrappers for the second motor!
 void forwardstep2() {  
-  myStepper2->onestep(FORWARD, SINGLE);
+  myStepper2->onestep(FORWARD, DOUBLE);
 }
 void backwardstep2() {  
-  myStepper2->onestep(BACKWARD, SINGLE);
+  myStepper2->onestep(BACKWARD, DOUBLE);
 }
 // Now we'll wrap the 3 steppers in an AccelStepper object
 AccelStepper stepper1(&forwardstep1, &backwardstep1);
@@ -54,8 +63,8 @@ void go_forward(void){
 }
 void go_backward(void){
   Serial.println("backward");
-  	stepper1.moveTo(stepper1.currentPosition()-10);
-    	stepper2.moveTo(stepper2.currentPosition()-10);
+  	stepper1.moveTo(stepper1.currentPosition()-100);
+    	stepper2.moveTo(stepper2.currentPosition()-100);
    stepper1.run();
    stepper2.run();
 }
@@ -87,7 +96,14 @@ void reverse_right(void){
    stepper1.run();
    stepper2.run();
 }
-
+void out_dump (void)
+{ 
+  for(pos = 45; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
+  {                                
+    myservo.write(pos);
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+}
 void setup ()
 {
   // open the serial port:
@@ -95,7 +111,6 @@ void setup ()
   Serial.println("Robot 6 v2.0");
   Serial.println("");
   AFMStop.begin(); // Start the top shield
-   
   stepper1.setMaxSpeed(500.0);
   stepper1.setAcceleration(200.0);
   stepper1.setSpeed(500);  
@@ -103,6 +118,8 @@ void setup ()
   stepper2.setMaxSpeed(500.0);
   stepper2.setAcceleration(200.0);
   stepper2.setSpeed(500); 
+  myservo.attach(9);
+   myservo.write(90);
 }
 
 void loop ()
@@ -117,10 +134,11 @@ void loop ()
   }
 }
 
+
 /*
   PyroTech Loop - this is where you code goes. You will receive 
   one character "c" at a time, each time a key stroke is received 
-  from the keyboard drivers station.  You can choose to have your 
+  from the keyboard drivers station.  You can choose to oave your 
   code do whatever you want when that character arrives.
 */
 void pt_loop(char c)
@@ -147,6 +165,9 @@ void pt_loop(char c)
     break;
   case 'c':  
     reverse_right();
+    break;
+  case 'o':
+    out_dump();
     break;
   default:
     break;
