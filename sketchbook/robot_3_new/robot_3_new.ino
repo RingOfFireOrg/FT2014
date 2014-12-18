@@ -224,37 +224,22 @@ void pt_loop(char c)
   case 'z':
     wiggle();
     break;
-<<<<<<< HEAD
-  default:
-    break;
-
-=======
-  
-  
->>>>>>> 38de69791a9a8019bed40236c4f04576e7ec23ab
   case 'b':
     Brush();
     break;
-
   case 'n':
     BackwardsBrush();
-    break;
-<<<<<<< HEAD
-  }
-=======
-    
-      case 'u':
+    break;    
+  case 'u':
     out_mandables();
     break;
   case 'i':
     in_mandables();
     break;    
-    
-default:
+  default:
     break;
     
 }
->>>>>>> 38de69791a9a8019bed40236c4f04576e7ec23ab
 
   stepper1.run();
   stepper2.run();
