@@ -21,7 +21,7 @@ boolean flip = false;
 boolean state1 = true, firstWiggle = true;
 long lastSwitch, switchTime = 2000;
 double interval = 50;
-g
+
 #define STEP_TYPE DOUBLE;
 
 void forwardstep1() {  
@@ -124,6 +124,27 @@ void wiggle() {
   }
 
 
+void in_mandables(void)
+{ 
+
+  for(pos = 0; pos < 45; pos += 1)  // goes from 0 degrees to 180 degrees 
+  {                                  // in steps of 1 degree 
+    myservo.write(pos);
+
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+
+}
+void out_mandables(void)
+{ 
+  for(pos = 45; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
+  {                                
+    myservo.write(pos);       
+   
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+}
+
 void setup ()
 {
   // open the serial port:
@@ -203,8 +224,7 @@ void pt_loop(char c)
   case 'z':
     wiggle();
     break;
-  default:
-    break;
+  
   
   case 'b':
     Brush();
@@ -213,6 +233,17 @@ void pt_loop(char c)
      case 'n':
     BackwardsBrush();
     break;
+    
+      case 'u':
+    out_mandables();
+    break;
+  case 'i':
+    in_mandables();
+    break;    
+    
+default:
+    break;
+    
 }
 
   stepper1.run();
