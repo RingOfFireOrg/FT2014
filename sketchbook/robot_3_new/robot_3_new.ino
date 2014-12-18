@@ -124,6 +124,27 @@ void BackwardsBrush  (void)  {
 }
 
 
+void in_mandables(void)
+{ 
+
+  for(pos = 0; pos < 45; pos += 1)  // goes from 0 degrees to 180 degrees 
+  {                                  // in steps of 1 degree 
+    myservo.write(pos);
+
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+
+}
+void out_mandables(void)
+{ 
+  for(pos = 45; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
+  {                                
+    myservo.write(pos);       
+   
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+}
+
 void setup ()
 {
   // open the serial port:
@@ -203,9 +224,14 @@ void pt_loop(char c)
   case 'z':
     wiggle();
     break;
+<<<<<<< HEAD
   default:
     break;
 
+=======
+  
+  
+>>>>>>> 38de69791a9a8019bed40236c4f04576e7ec23ab
   case 'b':
     Brush();
     break;
@@ -213,7 +239,22 @@ void pt_loop(char c)
   case 'n':
     BackwardsBrush();
     break;
+<<<<<<< HEAD
   }
+=======
+    
+      case 'u':
+    out_mandables();
+    break;
+  case 'i':
+    in_mandables();
+    break;    
+    
+default:
+    break;
+    
+}
+>>>>>>> 38de69791a9a8019bed40236c4f04576e7ec23ab
 
   stepper1.run();
   stepper2.run();

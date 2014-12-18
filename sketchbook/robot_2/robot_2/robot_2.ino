@@ -11,23 +11,13 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
-<<<<<<< HEAD
-#include <Servo.h> 
+//int left = 0;
 
-Servo myservo;  // create servo object to control a servo 
-// a maximum of eight servo objects can be created 
-
-int pos = 0;    // variable to store the servo position 
-
-int left = 0;
-Adafruit_MotorShield AFMS(0x60); // Default address, no jumpers
-=======
 #include <Servo.h>
 
 //Adafruit_MotorShield AFMSbot(0x61); // Rightmost jumper closed
 Adafruit_MotorShield AFMStop(0x60); // Default address, no jumpers
 
->>>>>>> e82dd0a7e64e9f97ab1714a88896ff17b14f382c
 // Connect two steppers with 200 steps per revolution (1.8 degree)
 // to the top shield
 Adafruit_StepperMotor *myStepper1 = AFMStop.getStepper(200, 1);
@@ -37,10 +27,9 @@ Servo myservo;
 Servo myservo2;
 int pos = 0;
 
-<<<<<<< HEAD
-#define STEP_TYPE DOUBLE
-#define SPEED_LEVEL 50
-=======
+//#define STEP_TYPE DOUBLE
+//#define SPEED_LEVEL 50
+
 // Connect one stepper with 200 steps per revolution (1.8 degree)
 // to the bottom shield
 //Adafruit_StepperMotor *myStepper3 = AFMSbot.getStepper(200, 2);
@@ -49,7 +38,7 @@ int pos = 0;
 void forwardstep1() {  
   myStepper1->onestep(FORWARD, SINGLE);
 }
->>>>>>> e82dd0a7e64e9f97ab1714a88896ff17b14f382c
+
 
 void backwardstep1() {  
   myStepper1->onestep(BACKWARD, SINGLE);
@@ -98,51 +87,20 @@ void reverse_right(void){
 
 void in_mandables(void)
 { 
-<<<<<<< HEAD
-  for(pos = 0; pos < 90; pos += 1)  // goes from 0 degrees to 90 degrees 
-  {                                  // in steps of 1 degree 
-    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
-    delay(15);                       // waits 15ms for the servo to reach the position 
-  } 
-}
-
-//  for(pos = 180; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
-//  {                                
-//    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
-//    delay(15);                       // waits 15ms for the servo to reach the position 
-//  } 
-// }
-void in_step(void)
-{ 
-  for(pos = pos; pos < 45; pos += 1)  // goes from 0 degrees to 90 degrees 
-  {                                  // in steps of 1 degree 
-  myservo.write(pos);
-    myservo.write(pos + 1);              // tell servo to go to position in variable 'pos' 
-    delay(15);                       // waits 15ms for the servo to reach the position 
-  
-
- for(pos = 180; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
-  {                                
-  myservo.write(pos);              // tell servo to go to position in variable 'pos' 
-   delay(15);                       // waits 15ms for the servo to reach the position 
- } 
-}
-=======
   for(pos = 0; pos < 45; pos += 1)  // goes from 0 degrees to 180 degrees 
   {                                  // in steps of 1 degree 
-    myservo.write(pos);
-    myservo2.write(45-pos); 
+    myservo.write(45+pos);
+    myservo2.write(90-pos); 
     delay(15);                       // waits 15ms for the servo to reach the position 
   } 
 
->>>>>>> e82dd0a7e64e9f97ab1714a88896ff17b14f382c
 }
 void out_mandables(void)
 { 
   for(pos = 45; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
   {                                
-    myservo.write(pos);       
-    myservo2.write(45-pos); 
+    myservo.write(45+pos);       
+    myservo2.write(90-pos); 
     delay(15);                       // waits 15ms for the servo to reach the position 
   } 
 }
@@ -153,14 +111,7 @@ void setup ()
   Serial.begin(9600);       
   Serial.println("Robot 4");
   Serial.println("");
-<<<<<<< HEAD
-  AFMS.begin();
-  motor_right->setSpeed(SPEED_LEVEL);
-  motor_left->setSpeed(SPEED_LEVEL);
-  myservo.attach(9);  // attaches the servo on pin 9 to the servo object 
-  myservo.write(90);  // set servo to mid-point
-  // EDIT   myservo2.attach(10);   
-=======
+
   myservo.attach(9);
   myservo2.attach(10);
   AFMStop.begin(); // Start the top shield
@@ -174,7 +125,6 @@ void setup ()
   stepper2.setSpeed(500);
   myservo.write(45);
   myservo2.write(0); 
->>>>>>> e82dd0a7e64e9f97ab1714a88896ff17b14f382c
 }
 
 void loop ()
@@ -219,38 +169,15 @@ void pt_loop(char c)
   case 'c':  
     reverse_right();
     break;
-<<<<<<< HEAD
-  case 'i':  
-    in_mandables();
-    break;
-  case 'u':  
-    in_step();
-    break;
-  case 'o':  
-=======
-
   case 'u':
->>>>>>> e82dd0a7e64e9f97ab1714a88896ff17b14f382c
     out_mandables();
     break;
   case 'i':
     in_mandables();
     break;    
-
-
-
   default:
     break;
   }
   stepper1.run();
   stepper2.run();
 }
-
-
-<<<<<<< HEAD
-=======
-
-
-
-
->>>>>>> e82dd0a7e64e9f97ab1714a88896ff17b14f382c
